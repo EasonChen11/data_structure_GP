@@ -5,6 +5,10 @@
 
 # 命名規則
 
+### GIT分支命名方式
+eason/fix_xxx_or_add_yyy_function
+example:
+`eason/新增專案功能設計文件`
 
 # 使用GIT開發流程
 
