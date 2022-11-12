@@ -27,3 +27,6 @@ example:
 5. commit
 6. Push
 
+Note:
+PR合併到main後, 分支會自動刪除.
+
