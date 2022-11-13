@@ -21,7 +21,7 @@
 example:
 `eason/新增專案功能設計文件`
 
-### commit的命名方式
+## commit的命名方式
 
 [開發者][issue號碼-功能或修復的問題]
 
@@ -31,40 +31,54 @@ example:
 
 ## 使用GIT開發流程
 
+0. 空的資料夾第一次pull
+```
+git clone https://github.com/EasonChen11/data_structure_GP.git .
+```
+*只有第一次需要這麼做*
+
 1. 切到main
 ```
 git checkout main
 ```
+
 2. Pull
 ```
 git pull
 ```
+
 3. 開分支
 ```
 git branch [branch name]
 ```
 *遵守前面所規定的名稱*
+
 4. 切到分支
 ```
 git checkout [branch name]
 ```
+
 5. 開發程式
+
 6. commit
 ```
 git add .
 git commit -m "[commit messege]"
 ```
 *遵守前面commit的規則*
+
 7. Push
 ```
 git push --set-uptream origin [branch name]
 ```
+
 8. Pull Request
     1. 點選GitHub上面' pull request'
     2. 點選' new request'
     3. 在敘述欄寫入連結的issue
 
        ```# [issue number]```
+       
     4. 下面點選' merge request'
 
 ---
