@@ -43,7 +43,7 @@ vocab * CreateNewCharNode(void);
 
 void ConnectVocabularyChar(vocab **, dType);
 
-void ConnectAppBook(appBook **, appBook *);
+void ConnectAppBookList(appBook ** firstNode, appBook * newData);
 
 int main(){
     AppointmentBook();
@@ -60,19 +60,19 @@ lead * ReadFromFile(void){
     printf("input file name:");//ask user open file name
     scanf("%s",fileName);
     FILE * inputFile = fopen(fileName,"r");//open file
-    if(inputFile==NULL){
+    if(inputFile==NULL){//check file can open
         printf("%s can't open\n",fileName);
         return newLead;
     }
 
-    while ((inputCharacter = (dType)fgetc(inputFile))!=EOF){
+    while ((inputCharacter = (dType)fgetc(inputFile))!=EOF){//check whether read end of file
         selectItem=who;//initial to who_item
-        appBook * newDataNode = CreateNewAppBookNode();
-        while (selectItem!=repeat) {
+        appBook * newDataNode = CreateNewAppBookNode();//create a new appoint_book which isn't connect to the list
+        while (selectItem!=repeat) {//who->what->when->where finish one appoint_book node
             vocab ** vocabularyFirstChar;
             switch (selectItem) {
                 case who:vocabularyFirstChar=&(newDataNode->who);
-                    ConnectVocabularyChar(vocabularyFirstChar, inputCharacter);
+                    ConnectVocabularyChar(vocabularyFirstChar, inputCharacter);//must do it.Because this word is gotten avoid lost this word.
                     break;
                 case what:vocabularyFirstChar=&(newDataNode->what);
                     break;
@@ -83,49 +83,49 @@ lead * ReadFromFile(void){
                 default:
                     break;
             }
-            while ( (inputCharacter= (dType)fgetc(inputFile)) != '\n' ) {
+            while ( (inputCharacter= (dType)fgetc(inputFile)) != '\n' ) {//until at the string least
                 ConnectVocabularyChar(vocabularyFirstChar, inputCharacter);
             }
             ++selectItem;//to next item
         }//one AppBook node
 
         ++(newLead->howMuchNodeInTheList);
-        ConnectAppBook(&(newLead->listFirstNode), newDataNode);
+        ConnectAppBookList(&(newLead->listFirstNode), newDataNode);//let created node link to lead node
     }
     fclose(inputFile);
     return newLead;
 }
 
-void ConnectAppBook(appBook ** firstNode, appBook * newData) {
-    if((*firstNode)==NULL){
+void ConnectAppBookList(appBook ** firstNode, appBook * newData) {
+    if((*firstNode)==NULL){//first is NULL
         (*firstNode)=newData;
         return;
     }
     appBook * nowAppBookNode=*firstNode;
-    while(nowAppBookNode->next!=NULL) nowAppBookNode= nowAppBookNode->next;
+    while(nowAppBookNode->next!=NULL) nowAppBookNode= nowAppBookNode->next;//find the least node
     nowAppBookNode->next=newData;
 }
 
 void ConnectVocabularyChar(vocab ** vocabularyChar, dType character) {
-    vocab * newChar = CreateNewCharNode();
+    vocab * newChar = CreateNewCharNode();//create a node save the character
     newChar->word=character;
-    if((*vocabularyChar)==NULL){
+    if((*vocabularyChar)==NULL){//first is NULL
         (*vocabularyChar)=newChar;
         return;
     }
     vocab * nowChar=*vocabularyChar;
-    while(nowChar->nextWord!=NULL) nowChar= nowChar->nextWord;
+    while(nowChar->nextWord!=NULL) nowChar= nowChar->nextWord;//find the least node
     nowChar->nextWord=newChar;
 }
 
-vocab * CreateNewCharNode(void) {
+vocab * CreateNewCharNode(void) {//initial CharNode data
     vocab *new_node = (vocab *) malloc(sizeof (vocab));
     new_node->word='\0';
     new_node->nextWord=NULL;
     return new_node;
 }
 
-appBook * CreateNewAppBookNode(void) {
+appBook * CreateNewAppBookNode(void) {//initial AppBook data
     appBook *new_node = (appBook *) malloc(sizeof (appBook));
     new_node->who=NULL;
     new_node->when=NULL;
@@ -135,7 +135,7 @@ appBook * CreateNewAppBookNode(void) {
     return new_node;
 }
 
-lead * CreateNewLeadNode(void) {
+lead * CreateNewLeadNode(void) {//initial Lead node data
     lead *new_node = (lead*) malloc(sizeof (lead));
     new_node->howMuchNodeInTheList=0;
     new_node->listFirstNode=NULL;
