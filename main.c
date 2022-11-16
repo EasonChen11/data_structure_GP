@@ -10,6 +10,7 @@ typedef char dType;
 enum appointment_book_item{
     who,what,when,where,repeat
 }selectItem=who;
+
 struct link_list_lead{
     int howMuchNodeInTheList;
     struct appointment_book *listFirstNode;
@@ -21,14 +22,13 @@ struct appointment_book{
     struct storage_character *where;
     struct appointment_book *next;
 };
-
 struct storage_character{
     dType word;
     struct storage_character *nextWord;
 };
 
 typedef struct link_list_lead lead;
-typedef struct appointment_book app_book;
+typedef struct appointment_book appBook;
 typedef struct storage_character vocab;
 
 void AppointmentBook(void);
@@ -39,7 +39,7 @@ void ViewDay(lead*appBook);
 void ViewWeek(lead*appBook);
 void Modify(lead*appBook);
 void Delete(lead*appBook);
-void Search(lead*appBook);
+int Search(lead*appBook);
 void Quit(lead*appBook);
 
 lead * ReadFromFile(void);
@@ -52,40 +52,49 @@ vocab * CreateNewCharNode(void);
 
 void ConnectVocabularyChar(vocab **, dType);
 
-void ConnectAppBookList(appBook ** firstNode, appBook * newData);
+void ConnectAppBookList(appBook **, appBook *);
 
 int main(){
     AppointmentBook();
     return 0;
 }
 
-void Menu(lead*appBook){
-    int quit=0;
-    while (!quit) {
-        int choice =ChoiceMenu() ;  // get a choice
-        switch (choice) { // process according to the choice
-            case 1: EnterRecord(appBook);
-                    break;
-            case 2: ViewDay(appBook);
-                    break;
-            case 3: ViewWeek(appBook);
-                    break;
-            case 4: Modify(appBook);
-                    break;
-            case 5: Delete(appBook);
-                    break;
-            case 6: // Search(appBook, count);
-                    printf("Search --- record at %d\n",Search(appBook));
-                    break;
-            case 9: Quit(appBook);
-                    quit = 1;
-                    break;
-            default: printf("Please enter a choice 1-6 or 9 to quit\n");
-        }
-    }
-
 void AppointmentBook(void){
     lead * appBook = ReadFromFile();
+    Menu();
+}
+
+void Menu(lead*appBook) {
+    int quit = 0;
+    while ( !quit ) {
+        int choice = ChoiceMenu();  // get a choice
+        switch (choice) { // process according to the choice
+            case 1:
+                EnterRecord(appBook);
+                break;
+            case 2:
+                ViewDay(appBook);
+                break;
+            case 3:
+                ViewWeek(appBook);
+                break;
+            case 4:
+                Modify(appBook);
+                break;
+            case 5:
+                Delete(appBook);
+                break;
+            case 6: // Search(appBook, count);
+                printf("Search --- record at %d\n", Search(appBook));
+                break;
+            case 9:
+                Quit(appBook);
+                quit = 1;
+                break;
+            default:
+                printf("Please enter a choice 1-6 or 9 to quit\n");
+        }
+    }
 }
 
 lead * ReadFromFile(void){
@@ -130,9 +139,6 @@ lead * ReadFromFile(void){
     return newLead;
 }
 
-
-}
-
 int ChoiceMenu(){
     printf("***************************************\n");
     printf("*      Appointment Book Services      *\n");
@@ -146,6 +152,8 @@ int ChoiceMenu(){
     int choice;
     scanf("%d",&choice);
     return choice;
+}
+
 void ConnectAppBookList(appBook ** firstNode, appBook * newData) {
     if((*firstNode)==NULL){//first is NULL
         (*firstNode)=newData;
