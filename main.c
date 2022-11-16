@@ -9,7 +9,7 @@
 typedef char dType;
 enum appointment_book_item{
     who,what,when,where,repeat
-}selectItem=who;
+};
 
 struct link_list_lead{
     int howMuchNodeInTheList;
@@ -54,6 +54,10 @@ void ConnectVocabularyChar(vocab **, dType);
 
 void ConnectAppBookList(appBook **, appBook *);
 
+void StorageAppBookInformation(appBook * AppBookData, FILE * inputFile);
+
+void StorageVocabulary(vocab ** vocabularyFirstChar, FILE * inputFile);
+
 int main(){
     AppointmentBook();
     return 0;
@@ -61,10 +65,10 @@ int main(){
 
 void AppointmentBook(void){
     lead * appBook = ReadFromFile();
-    Menu();
+    //Menu();
 }
 
-void Menu(lead*appBook) {
+/*void Menu(lead*appBook) {
     int quit = 0;
     while ( !quit ) {
         int choice = ChoiceMenu();  // get a choice
@@ -95,7 +99,7 @@ void Menu(lead*appBook) {
                 printf("Please enter a choice 1-6 or 9 to quit\n");
         }
     }
-}
+}*/
 
 lead * ReadFromFile(void){
     lead * newLead = CreateNewLeadNode();
@@ -109,34 +113,42 @@ lead * ReadFromFile(void){
     }
 
     while ((inputCharacter = (dType)fgetc(inputFile))!=EOF){//check whether read end of file
-        selectItem=who;//initial to who_item
         appBook * newDataNode = CreateNewAppBookNode();//create a new appoint_book which isn't connect to the list
-        while (selectItem!=repeat) {//who->what->when->where finish one appoint_book node
-            vocab ** vocabularyFirstChar;
-            switch (selectItem) {
-                case who:vocabularyFirstChar=&(newDataNode->who);
-                    ConnectVocabularyChar(vocabularyFirstChar, inputCharacter);//must do it.Because this word is gotten avoid lost this word.
-                    break;
-                case what:vocabularyFirstChar=&(newDataNode->what);
-                    break;
-                case when:vocabularyFirstChar=&(newDataNode->when);
-                    break;
-                case where:vocabularyFirstChar=&(newDataNode->where);
-                    break;
-                default:
-                    break;
-            }
-            while ( (inputCharacter= (dType)fgetc(inputFile)) != '\n' ) {//until at the string least
-                ConnectVocabularyChar(vocabularyFirstChar, inputCharacter);
-            }
-            ++selectItem;//to next item
-        }//one AppBook node
-
+        ConnectVocabularyChar(&(newDataNode->who), inputCharacter);//must do it.Because this word is gotten avoid lost this word.
+        StorageAppBookInformation(newDataNode, inputFile);//one AppBook node
         ++(newLead->howMuchNodeInTheList);
         ConnectAppBookList(&(newLead->listFirstNode), newDataNode);//let created node link to lead node
     }
     fclose(inputFile);
     return newLead;
+}
+
+void StorageAppBookInformation(appBook * AppBookData, FILE * inputFile) {
+    enum appointment_book_item selectItem=who;
+    while (selectItem!=repeat) {//who->what->when->where finish one appoint_book node
+        vocab ** vocabularyFirstChar;
+        switch (selectItem) {
+            case who:vocabularyFirstChar=&(AppBookData->who);
+                break;
+            case what:vocabularyFirstChar=&(AppBookData->what);
+                break;
+            case when:vocabularyFirstChar=&(AppBookData->when);
+                break;
+            case where:vocabularyFirstChar=&(AppBookData->where);
+                break;
+            default:
+                break;
+        }
+        StorageVocabulary(vocabularyFirstChar,inputFile);
+        ++selectItem;//to next item
+    }//one AppBook node
+}
+
+void StorageVocabulary(vocab ** vocabularyFirstChar, FILE * inputFile) {
+    dType inputCharacter;
+    while ( (inputCharacter= (dType)fgetc(inputFile)) != '\n' ) {//until at the string least
+        ConnectVocabularyChar(vocabularyFirstChar, inputCharacter);
+    }
 }
 
 int ChoiceMenu(){
