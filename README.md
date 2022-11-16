@@ -1,7 +1,7 @@
 # data_structure_GP
 目的: 資料結構專案
 
-參與者: Eason, 江若慈,楊婷羽
+參與者: 陳毅軒Eason, 江若慈Chiang,楊婷羽Tingyu
 
 ## 命名規則
 * **function name** :Pascal case
@@ -23,10 +23,10 @@ example:
 
 ## commit的命名方式
 
-[開發者][issue號碼-功能或修復的問題]
+[開發者][功能或修復的問題]
 
 example:
-[eason][4-新增專案功能設計文件]
+[eason][新增專案功能設計文件]
 
 
 ## 使用GIT開發流程
