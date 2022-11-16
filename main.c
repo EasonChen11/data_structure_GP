@@ -3,6 +3,7 @@
 #include <string.h>
 #include <assert.h>
 #include <fileapi.h>
+#include <xcmc.h>
 
 #define filenameLong 20
 
@@ -54,9 +55,15 @@ void ConnectVocabularyChar(vocab **, dType);
 
 void ConnectAppBookList(appBook **, appBook *);
 
-void StorageAppBookInformation(appBook * AppBookData, FILE * inputFile);
+void StorageAppBookInformation(appBook *, FILE *);
 
-void StorageVocabulary(vocab ** vocabularyFirstChar, FILE * inputFile);
+void StorageVocabulary(vocab **, FILE *);
+
+void PrintAppBook(appBook *);
+
+void PrintAppBookOneData(appBook *);
+
+void PrintOneVocabulary(vocab *);
 
 int main(){
     AppointmentBook();
@@ -64,9 +71,11 @@ int main(){
 }
 
 void AppointmentBook(void){
-    lead * appBook = ReadFromFile();
+    lead * appointmentBook = ReadFromFile();
+    PrintAppBook(appointmentBook->listFirstNode);
     //Menu();
 }
+
 
 /*void Menu(lead*appBook) {
     int quit = 0;
@@ -210,4 +219,33 @@ lead * CreateNewLeadNode(void) {//initial Lead node data
     new_node->howMuchNodeInTheList=0;
     new_node->listFirstNode=NULL;
     return new_node;
+}
+
+void PrintAppBook(appBook * appointmentBook) {
+    int index=1;
+    while (appointmentBook!=NULL){
+        printf("%d:\n",index++);
+        PrintAppBookOneData(appointmentBook);
+        putchar('\n');
+        appointmentBook=appointmentBook->next;
+    }
+}
+
+void PrintAppBookOneData(appBook * appointmentBookOneData) {
+    printf("Who:");
+    PrintOneVocabulary(appointmentBookOneData->who);
+    printf("What:");
+    PrintOneVocabulary(appointmentBookOneData->what);
+    printf("When:");
+    PrintOneVocabulary(appointmentBookOneData->when);
+    printf("Where:");
+    PrintOneVocabulary(appointmentBookOneData->where);
+}
+
+void PrintOneVocabulary(vocab * character) {
+    while (character!=NULL){
+        putchar(character->word);
+        character=character->nextWord;
+    }
+    putchar('\n');
 }
