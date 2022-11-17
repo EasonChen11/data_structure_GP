@@ -2,8 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <fileapi.h>
-#include <xcmc.h>
+
 
 #define filenameLong 20
 
