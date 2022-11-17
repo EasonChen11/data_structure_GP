@@ -72,11 +72,11 @@ int main(){
 }
 
 void AppointmentBook(void){
-    lead * appointmentBook = ReadFromFile();
-    rewind(stdin);
-    EnterRecord(appointmentBook);
+    lead * appointmentBook = ReadFromFile(); //rad the input file
+    rewind(stdin); //
+    EnterRecord(appointmentBook); //ask user to enter new data
     PrintAppBook(appointmentBook->listFirstNode);
-    //Menu();
+    //Menu(); //choose what to do next
 }
 
 
@@ -115,13 +115,13 @@ void AppointmentBook(void){
 
 void EnterRecord(lead*leader){
 
-    appBook *newAppBookNode=CreateNewAppBookNode();
-    PrintEnterRecord(newAppBookNode);
+    appBook *newAppBookNode=CreateNewAppBookNode(); //create a new node
+    PrintEnterRecord(newAppBookNode); //print and scanf the data
 
-    ConnectAppBookList(&(leader->listFirstNode), newAppBookNode);
+    ConnectAppBookList(&(leader->listFirstNode), newAppBookNode); //Link data entered to the list
 
 }
- void PrintEnterRecord(appBook*newAppBookNode){
+ void PrintEnterRecord(appBook*newAppBookNode){ //ask user to enter the data
 
 
     printf("\nEnterRecord -- to enter the who/what/when/where\n");
