@@ -1,3 +1,5 @@
+//finish read file function, enter record function, modify function, clear function
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -81,8 +83,11 @@ int main(){
 
 void AppointmentBook(void){
     lead * appointmentBook = ReadFromFile(); //rad the input file
-    rewind(stdin); //
+    PrintAppBook(appointmentBook->listFirstNode);
+    rewind(stdin);
     EnterRecord(appointmentBook); //ask user to enter new data
+    PrintAppBook(appointmentBook->listFirstNode);
+    Modify(appointmentBook);
     PrintAppBook(appointmentBook->listFirstNode);
     //Menu(); //choose what to do next
 }
@@ -127,7 +132,7 @@ void EnterRecord(lead*leader){
     PrintEnterRecord(newAppBookNode); //print and scanf the data
 
     ConnectAppBookList(&(leader->listFirstNode), newAppBookNode); //Link data entered to the list
-
+    ++(leader->howMuchNodeInTheList);
 }
  void PrintEnterRecord(appBook*newAppBookNode){ //ask user to enter the data
 
@@ -284,7 +289,21 @@ void PrintOneVocabulary(vocab * character) {
     putchar('\n');
 }
 
-void Modify(lead*appBook){
+void Modify(lead* leader){//change the AppBook one node data
+    int modifyDataIndex;
+    while (1){
+        printf("Modify which data?");
+        scanf("%d",&modifyDataIndex);
+        rewind(stdin);
+        if(modifyDataIndex<=leader->howMuchNodeInTheList)break;//index is legal
+        printf("Over index.\nPlease enter again.\n");
+    }
+    appBook * modifyDataNode=leader->listFirstNode;
+    while (--modifyDataIndex)modifyDataNode=modifyDataNode->next;//go to the index node
+    FreeAppBook(modifyDataNode);//clear modify node data
+    PrintEnterRecord(modifyDataNode);//read new input information
+}
+
 
 void FreeLead(lead *leader){//free leader
     FreeAppBookList(leader->listFirstNode);
@@ -301,14 +320,18 @@ void FreeAppBookList(appBook *listFirstNode){//free appBook's node
 }
 void FreeAppBook(appBook *listFirstNode){//free who/what/when/where
     FreeVocab(listFirstNode->who);
+    listFirstNode->who=NULL;
     FreeVocab(listFirstNode->what);
+    listFirstNode->what=NULL;
     FreeVocab(listFirstNode->when);
+    listFirstNode->when=NULL;
     FreeVocab(listFirstNode->where);
+    listFirstNode->where=NULL;
 }
-void FreeVocab(vocab * word){//free word's linked list
-    if(word==NULL){
+void FreeVocab(vocab * word) {//free word's linked list
+    if (word == NULL) {
         return;
     }
-        FreeVocab(word->nextWord);
-        free(word);
+    FreeVocab(word->nextWord);
+    free(word);
 }
