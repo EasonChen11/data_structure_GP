@@ -249,6 +249,15 @@ void PrintOneVocabulary(vocab * character) {
     putchar('\n');
 }
 
-void Modify(lead*appBook){
-
+void Modify(lead* leader){
+    int modifyDataIndex;
+    while (1){
+        printf("Modify which data?");
+        scanf("%d",&modifyDataIndex);
+        if(modifyDataIndex<=leader->howMuchNodeInTheList)break;
+        printf("Over index.\nPlease enter again.\n");
+    }
+    appBook * modifyDataNode=leader->listFirstNode;
+    while (--modifyDataIndex)modifyDataNode=modifyDataNode->next;
+    PrintEnterRecord(modifyDataNode);
 }
