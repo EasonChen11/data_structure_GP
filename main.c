@@ -295,7 +295,7 @@ void Modify(lead* leader){//change the AppBook one node data
         printf("Modify which data?");
         scanf("%d",&modifyDataIndex);
         rewind(stdin);
-        if(modifyDataIndex<=leader->howMuchNodeInTheList)break;//index is legal
+        if(modifyDataIndex<=leader->howMuchNodeInTheList && modifyDataIndex>0)break;//index is legal
         printf("Over index.\nPlease enter again.\n");
     }
     appBook * modifyDataNode=leader->listFirstNode;
