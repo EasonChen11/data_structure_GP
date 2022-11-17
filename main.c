@@ -64,6 +64,14 @@ void PrintAppBookOneData(appBook *);
 
 void PrintOneVocabulary(vocab *);
 
+void FreeLead(lead *leader);
+
+void FreeAppBookList(appBook *listFirstNode);
+
+void FreeAppBook(appBook *listFirstNode);
+
+void FreeVocab(vocab * word);
+
 void PrintEnterRecord(appBook*);
 
 int main(){
@@ -278,4 +286,29 @@ void PrintOneVocabulary(vocab * character) {
 
 void Modify(lead*appBook){
 
+void FreeLead(lead *leader){//free leader
+    FreeAppBookList(leader->listFirstNode);
+    free(leader);
+}
+void FreeAppBookList(appBook *listFirstNode){//free appBook's node
+    if(listFirstNode==NULL){//check if it's the last node
+        return;
+    }
+        FreeAppBookList(listFirstNode->next);
+        FreeAppBook(listFirstNode);
+        free(listFirstNode);
+
+}
+void FreeAppBook(appBook *listFirstNode){//free who/what/when/where
+    FreeVocab(listFirstNode->who);
+    FreeVocab(listFirstNode->what);
+    FreeVocab(listFirstNode->when);
+    FreeVocab(listFirstNode->where);
+}
+void FreeVocab(vocab * word){//free word's linked list
+    if(word==NULL){
+        return;
+    }
+        FreeVocab(word->nextWord);
+        free(word);
 }
