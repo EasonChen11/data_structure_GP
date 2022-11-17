@@ -133,8 +133,8 @@ lead * ReadFromFile(void){
 
 void StorageAppBookInformation(appBook * AppBookData, FILE * inputFile) {
     enum appointment_book_item selectItem=who;
+    vocab ** vocabularyFirstChar;
     while (selectItem!=repeat) {//who->what->when->where finish one appoint_book node
-        vocab ** vocabularyFirstChar;
         switch (selectItem) {
             case who:vocabularyFirstChar=&(AppBookData->who);
                 break;
@@ -247,4 +247,8 @@ void PrintOneVocabulary(vocab * character) {
         character=character->nextWord;
     }
     putchar('\n');
+}
+
+void Modify(lead*appBook){
+
 }
