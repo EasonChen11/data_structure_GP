@@ -64,6 +64,8 @@ void PrintAppBookOneData(appBook *);
 
 void PrintOneVocabulary(vocab *);
 
+void PrintEnterRecord(appBook*);
+
 int main(){
     AppointmentBook();
     return 0;
@@ -71,36 +73,38 @@ int main(){
 
 void AppointmentBook(void){
     lead * appointmentBook = ReadFromFile();
+    rewind(stdin);
+    EnterRecord(appointmentBook);
     PrintAppBook(appointmentBook->listFirstNode);
     //Menu();
 }
 
 
-/*void Menu(lead*appBook) {
+/*void Menu(lead*leader) {
     int quit = 0;
     while ( !quit ) {
         int choice = ChoiceMenu();  // get a choice
         switch (choice) { // process according to the choice
             case 1:
-                EnterRecord(appBook);
+                EnterRecord(leader);
                 break;
             case 2:
-                ViewDay(appBook);
+                ViewDay(leader);
                 break;
             case 3:
-                ViewWeek(appBook);
+                ViewWeek(leader);
                 break;
             case 4:
-                Modify(appBook);
+                Modify(leader);
                 break;
             case 5:
-                Delete(appBook);
+                Delete(leader);
                 break;
-            case 6: // Search(appBook, count);
+            case 6: // Search(leader, count);
                 printf("Search --- record at %d\n", Search(appBook));
                 break;
             case 9:
-                Quit(appBook);
+                Quit(leader);
                 quit = 1;
                 break;
             default:
@@ -108,6 +112,29 @@ void AppointmentBook(void){
         }
     }
 }*/
+
+void EnterRecord(lead*leader){
+
+    appBook *newAppBookNode=CreateNewAppBookNode();
+    PrintEnterRecord(newAppBookNode);
+
+    ConnectAppBookList(&(leader->listFirstNode), newAppBookNode);
+
+}
+ void PrintEnterRecord(appBook*newAppBookNode){
+
+
+    printf("\nEnterRecord -- to enter the who/what/when/where\n");
+    printf("Please enter WHOM you have an appointment with:");
+    StorageVocabulary(&(newAppBookNode->who),stdin);
+    printf("Please enter WHAT the event is: ");
+    StorageVocabulary(&(newAppBookNode->what),stdin);
+    printf("Please enter WHEN (yymmddhhmm): ");
+    StorageVocabulary(&(newAppBookNode->when),stdin);
+    printf("Please enter WHERE you have an appointment at: ");
+    StorageVocabulary(&(newAppBookNode->where),stdin);
+
+}
 
 lead * ReadFromFile(void){
     lead * newLead = CreateNewLeadNode();
