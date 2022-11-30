@@ -29,6 +29,7 @@ struct storage_character{
     struct storage_character *nextWord;
 };
 
+typedef enum appointment_book_item appBook_item;
 typedef struct link_list_lead lead;
 typedef struct appointment_book appBook;
 typedef struct storage_character vocab;
@@ -80,6 +81,8 @@ void PrintEnterRecord(appBook*);
 void SearchName(appBook*);
 
 int StringCompare(vocab*,vocab*);
+
+vocab ** SelectADifferentRecordItem(appBook * keyPoint, appBook_item bookItem);
 
 int main(){
     AppointmentBook();
@@ -171,24 +174,22 @@ lead * ReadFromFile(void){
 }
 
 void StorageAppBookInformation(appBook * AppBookData, FILE * inputFile) {
-    enum appointment_book_item selectItem=who;
+    appBook_item selectItem=who;
     vocab ** vocabularyFirstChar;
     while (selectItem!=repeat) {//who->what->when->where finish one appoint_book node
-        switch (selectItem) {
-            case who:vocabularyFirstChar=&(AppBookData->who);
-                break;
-            case what:vocabularyFirstChar=&(AppBookData->what);
-                break;
-            case when:vocabularyFirstChar=&(AppBookData->when);
-                break;
-            case where:vocabularyFirstChar=&(AppBookData->where);
-                break;
-            default:
-                break;
-        }
+        vocabularyFirstChar=SelectADifferentRecordItem(AppBookData,selectItem++);//to next Item
         StorageVocabulary(vocabularyFirstChar,inputFile);
-        ++selectItem;//to next item
     }//one AppBook node
+}
+
+vocab ** SelectADifferentRecordItem(appBook * keyPoint, appBook_item bookItem) {
+    switch (bookItem) {
+        case who:   return &(keyPoint->who);
+        case what:  return &(keyPoint->who);
+        case when:  return &(keyPoint->who);
+        case where: return &(keyPoint->who);
+        default:    return NULL;
+    }
 }
 
 void StorageVocabulary(vocab ** vocabularyFirstChar, FILE * inputFile) {
@@ -338,39 +339,34 @@ void FreeVocab(vocab * word) {//free word's linked list
     free(word);
 }
 
-void SearchName(appBook*keyPoint){
-    vocab *userInputVocab=CreateNewCharNode();
-    printf("Please choose which list you want to search:");
+void SearchInformationOfUserInput(appBook * keyPoint, appBook_item selectItem) {
+    vocab *userInputVocab=NULL;
+    printf("Please enter string which you want to search:");
     rewind(stdin);
     StorageVocabulary(&userInputVocab,stdin);
-    PrintOneVocabulary(userInputVocab);
     int recordData=0;
-    while(keyPoint){
-            if(StringCompare(keyPoint->who,userInputVocab)){
-                PrintOneVocabulary(keyPoint->who);
-                recordData++;
+    while(keyPoint!=NULL){
+            if(StringCompare(*SelectADifferentRecordItem(keyPoint,selectItem),userInputVocab)){
+                printf("%d:\n",++recordData);
+                PrintAppBookOneData(keyPoint);
+                putchar('\n');
             }
                 keyPoint=keyPoint->next;
-
     }
+    FreeVocab(userInputVocab);//free memory of user input sting which use link list
     if(recordData==0)
         printf("could not find it\n");
-
-
 }
 
 int StringCompare(vocab*key,vocab*inputData)
 {
     while(key!=NULL && inputData!=NULL){
-            printf("%c %c\n",key->word,inputData->word);
             if(key->word==inputData->word){
                 key=key->nextWord;
                 inputData=inputData->nextWord;
             }
             else break;
-
         }
-
         if(key==NULL && inputData==NULL)
             return 1;
         else return 0;
