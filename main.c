@@ -44,6 +44,7 @@ void Delete(lead*appBook);
 int Search(lead*appBook);
 void Quit(lead*appBook);
 
+
 lead * ReadFromFile(void);
 
 lead * CreateNewLeadNode(void);
@@ -76,6 +77,10 @@ void FreeVocab(vocab * word);
 
 void PrintEnterRecord(appBook*);
 
+void SearchName(appBook*);
+
+int StringCompare(vocab*,vocab*);
+
 int main(){
     AppointmentBook();
     return 0;
@@ -104,6 +109,8 @@ void Menu(lead*leader) {
                 //Delete(leader);
                 break;
             case 4:
+                SearchName(leader->listFirstNode);
+
                 //Search(leader);
                 //printf("Search --- record at %d\n", Search(leader));
                 break;
@@ -203,6 +210,7 @@ int ChoiceMenu(){
     printf("\nPlease enter a choice:");
     int choice;
     scanf("%d",&choice);
+    rewind(stdin);
     return choice;
 }
 
@@ -328,4 +336,42 @@ void FreeVocab(vocab * word) {//free word's linked list
     }
     FreeVocab(word->nextWord);
     free(word);
+}
+
+void SearchName(appBook*keyPoint){
+    vocab *userInputVocab=CreateNewCharNode();
+    printf("Please choose which list you want to search:");
+    rewind(stdin);
+    StorageVocabulary(&userInputVocab,stdin);
+    PrintOneVocabulary(userInputVocab);
+    int recordData=0;
+    while(keyPoint){
+            if(StringCompare(keyPoint->who,userInputVocab)){
+                PrintOneVocabulary(keyPoint->who);
+                recordData++;
+            }
+                keyPoint=keyPoint->next;
+
+    }
+    if(recordData==0)
+        printf("could not find it\n");
+
+
+}
+
+int StringCompare(vocab*key,vocab*inputData)
+{
+    while(key!=NULL && inputData!=NULL){
+            printf("%c %c\n",key->word,inputData->word);
+            if(key->word==inputData->word){
+                key=key->nextWord;
+                inputData=inputData->nextWord;
+            }
+            else break;
+
+        }
+
+        if(key==NULL && inputData==NULL)
+            return 1;
+        else return 0;
 }
