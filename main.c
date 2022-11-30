@@ -353,7 +353,6 @@ void OutputFile(appBook *appointmentBook){
         FprintOneVocabulary(fp,appointmentBook->what);
         FprintOneVocabulary(fp,appointmentBook->when);
         FprintOneVocabulary(fp,appointmentBook->where);
-        fprintf(fp,"\n");
         appointmentBook=appointmentBook->next;
     }
     fclose(fp);
