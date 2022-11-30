@@ -89,6 +89,8 @@ vocab ** SelectADifferentRecordItem(appBook * keyPoint, appBook_item bookItem);
 
 appBook_item SearchManu();
 
+void RemoveChoiceAppBookNode(appBook ** keyPoint, int removeIndex);
+
 int main(){
     AppointmentBook();
     return 0;
@@ -268,6 +270,10 @@ lead * CreateNewLeadNode(void) {//initial Lead node data
 
 void PrintAppBook(appBook * appointmentBook)
 {
+    if(appointmentBook==NULL){
+        printf("appoint book is empty\n");
+        return;
+    }
     int index=1;
     while (appointmentBook!=NULL){
         printf("%d:\n",index++);
@@ -446,5 +452,19 @@ void Delete(lead* leader){
         else printf("choice 1~%d\n",leader->howMuchNodeInTheList);
     }
     leader->howMuchNodeInTheList--;
-    RemoveAppBook();
+    RemoveChoiceAppBookNode(&(leader->listFirstNode), removeIndex);
+    printf("\nremove finish~\n");
+}
+
+void RemoveChoiceAppBookNode(appBook ** keyPoint, int removeIndex) {
+    int index=1;
+    appBook *frontNode,*nowNode=*(keyPoint);
+    while (index++ < removeIndex) {
+        frontNode=nowNode;
+        nowNode = nowNode->next;
+    }
+    if(removeIndex==1) *keyPoint=nowNode->next;
+    else frontNode->next=nowNode->next;
+    FreeAppBook(nowNode);
+    free(nowNode);
 }
