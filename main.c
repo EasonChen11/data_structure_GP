@@ -114,7 +114,7 @@ void Menu(lead*leader) {
                 Modify(leader);
                 break;
             case 3:
-                //Delete(leader);
+                Delete(leader);
                 break;
             case 4:
                 Search(leader->listFirstNode);
@@ -432,4 +432,19 @@ int StringCompare(vocab*key,vocab*inputData)
         if(key==NULL && inputData==NULL)
             return 1;
         else return 0;
+}
+
+void Delete(lead* leader){
+    printf("Your Appoint Book\n");
+    PrintAppBook(leader->listFirstNode);
+    printf("which data you wont to remove (input index) or send -1 to cancel the delete operation:");
+    int removeIndex;
+    while(1) {
+        scanf("%d", &removeIndex);
+        if(removeIndex==-1)return;
+        if(removeIndex>0 && removeIndex<=leader->howMuchNodeInTheList)break;
+        else printf("choice 1~%d\n",leader->howMuchNodeInTheList);
+    }
+    leader->howMuchNodeInTheList--;
+    RemoveAppBook();
 }
