@@ -35,7 +35,7 @@ typedef struct storage_character vocab;
 
 void AppointmentBook(void);
 int ChoiceMenu();
-void Menu();
+void Menu(lead*leader);
 void EnterRecord(lead*appBook);
 void ViewDay(lead*appBook);
 void ViewWeek(lead*appBook);
@@ -85,15 +85,11 @@ void AppointmentBook(void){
     lead * appointmentBook = ReadFromFile(); //rad the input file
     PrintAppBook(appointmentBook->listFirstNode);
     rewind(stdin);
-    EnterRecord(appointmentBook); //ask user to enter new data
-    PrintAppBook(appointmentBook->listFirstNode);
-    Modify(appointmentBook);
-    PrintAppBook(appointmentBook->listFirstNode);
-    //Menu(); //choose what to do next
+    Menu(appointmentBook); //choose what to do next
 }
 
 
-/*void Menu(lead*leader) {
+void Menu(lead*leader) {
     int quit = 0;
     while ( !quit ) {
         int choice = ChoiceMenu();  // get a choice
@@ -102,29 +98,24 @@ void AppointmentBook(void){
                 EnterRecord(leader);
                 break;
             case 2:
-                ViewDay(leader);
-                break;
-            case 3:
-                ViewWeek(leader);
-                break;
-            case 4:
                 Modify(leader);
                 break;
-            case 5:
+            case 3:
                 Delete(leader);
                 break;
-            case 6: // Search(leader, count);
-                printf("Search --- record at %d\n", Search(appBook));
+            case 4:
+                Search(leader);
+                printf("Search --- record at %d\n", Search(leader));
                 break;
             case 9:
                 Quit(leader);
                 quit = 1;
                 break;
             default:
-                printf("Please enter a choice 1-6 or 9 to quit\n");
+                printf("Please enter a choice 1-4 or 9 to quit\n");
         }
     }
-}*/
+}
 
 void EnterRecord(lead*leader){
 
