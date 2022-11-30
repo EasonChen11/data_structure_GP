@@ -1,4 +1,4 @@
-//finish read file function, enter record function, modify function, clear function
+//finish read file function, enter record function, modify function, clear function, quit function, output file function
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -76,6 +76,10 @@ void FreeVocab(vocab * word);
 
 void PrintEnterRecord(appBook*);
 
+void OutputFile(appBook *appointmentBook);
+
+void FprintOneVocabulary(FILE* fp,vocab * character);
+
 int main(){
     AppointmentBook();
     return 0;
@@ -108,7 +112,7 @@ void Menu(lead*leader) {
                 //printf("Search --- record at %d\n", Search(leader));
                 break;
             case 9:
-                //Quit(leader);
+                Quit(leader);
                 quit = 1;
                 break;
             default:
@@ -203,6 +207,7 @@ int ChoiceMenu(){
     printf("\nPlease enter a choice:");
     int choice;
     scanf("%d",&choice);
+    rewind(stdin);
     return choice;
 }
 
@@ -328,4 +333,34 @@ void FreeVocab(vocab * word) {//free word's linked list
     }
     FreeVocab(word->nextWord);
     free(word);
+}
+
+void Quit(lead*appBook){
+    OutputFile(appBook->listFirstNode);//open a file to print final data
+    FreeLead(appBook);//free data
+}
+
+void OutputFile(appBook *appointmentBook){
+    dType fileName[filenameLong];
+    //output filename
+    printf("Please enter an output file:");
+    scanf("%s",fileName);
+    FILE*fp=fopen(fileName,"w");
+
+    while (appointmentBook!=NULL){//print until the last node
+        //print who,what,when,where
+        FprintOneVocabulary(fp,appointmentBook->who);
+        FprintOneVocabulary(fp,appointmentBook->what);
+        FprintOneVocabulary(fp,appointmentBook->when);
+        FprintOneVocabulary(fp,appointmentBook->where);
+        appointmentBook=appointmentBook->next;
+    }
+    fclose(fp);
+}
+void FprintOneVocabulary(FILE* fp,vocab * character) {//print string on output file
+    while (character!=NULL){
+        fprintf(fp,"%c",character->word);
+        character=character->nextWord;
+    }
+    fprintf(fp,"\n");
 }
