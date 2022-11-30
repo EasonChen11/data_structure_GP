@@ -305,9 +305,10 @@ void PrintOneVocabulary(vocab * character) {
 void Modify(lead* leader){//change the AppBook one node data
     int modifyDataIndex;
     while (1){
-        printf("Modify which data?");
+        printf("Modify which data(index) or send -1 to cancel modify operation:");
         scanf("%d",&modifyDataIndex);
         rewind(stdin);
+        if(modifyDataIndex==-1){ printf("rollback to manu\n"); return; }
         if(modifyDataIndex<=leader->howMuchNodeInTheList && modifyDataIndex>0)break;//index is legal
         printf("Over index.\nPlease enter again.\n");
     }
