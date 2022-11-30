@@ -42,7 +42,7 @@ void ViewDay(lead*appBook);
 void ViewWeek(lead*appBook);
 void Modify(lead*appBook);
 void Delete(lead*appBook);
-int Search(lead*appBook);
+void Search(appBook * firstNode);
 void Quit(lead*appBook);
 
 lead * ReadFromFile(void);
@@ -81,11 +81,13 @@ void OutputFile(appBook *appointmentBook);
 
 void FprintOneVocabulary(FILE* fp,vocab * character);
 
-void SearchName(appBook*);
+void SearchUserInput(appBook * keyPoint, appBook_item selectItem);
 
 int StringCompare(vocab*,vocab*);
 
 vocab ** SelectADifferentRecordItem(appBook * keyPoint, appBook_item bookItem);
+
+appBook_item SearchManu();
 
 int main(){
     AppointmentBook();
@@ -115,10 +117,10 @@ void Menu(lead*leader) {
                 //Delete(leader);
                 break;
             case 4:
-                SearchName(leader->listFirstNode);
-
-                //Search(leader);
-                //printf("Search --- record at %d\n", Search(leader));
+                Search(leader->listFirstNode);
+                break;
+            case 5:
+                PrintAppBook(leader->listFirstNode);
                 break;
             case 9:
                 Quit(leader);
@@ -182,16 +184,15 @@ void StorageAppBookInformation(appBook * AppBookData, FILE * inputFile) {
     while (selectItem!=repeat) {//who->what->when->where finish one appoint_book node
         vocabularyFirstChar=SelectADifferentRecordItem(AppBookData,selectItem++);//to next Item
         StorageVocabulary(vocabularyFirstChar,inputFile);
-        ++selectItem;//to next item
     }//one AppBook node
 }
 
 vocab ** SelectADifferentRecordItem(appBook * keyPoint, appBook_item bookItem) {
     switch (bookItem) {
         case who:   return &(keyPoint->who);
-        case what:  return &(keyPoint->who);
-        case when:  return &(keyPoint->who);
-        case where: return &(keyPoint->who);
+        case what:  return &(keyPoint->what);
+        case when:  return &(keyPoint->when);
+        case where: return &(keyPoint->where);
         default:    return NULL;
     }
 }
@@ -204,15 +205,15 @@ void StorageVocabulary(vocab ** vocabularyFirstChar, FILE * inputFile) {
 }
 
 int ChoiceMenu(){
-    printf("***************************************\n");
-    printf("*      Appointment Book Services      *\n");
-    printf("*      -------------------------      *\n");
-    printf("*   1. Enter Record       4. Modify   *\n");
-    printf("*   2. View Day           5. Delete   *\n");
-    printf("*   3. View Week          6. Search   *\n");
-    printf("*   9. Quit                           *\n");
-    printf("***************************************\n");
-    printf("\nPlease enter a choice:");
+    printf("*************************************\n");
+    printf("*      Appointment Book Services    *\n");
+    printf("*      -------------------------    *\n");
+    printf("*   1. Enter Record     3. Delete   *\n");
+    printf("*   2. Modify           4. Search   *\n");
+    printf("*   5. Print Appoint Book           *\n");
+    printf("*   9. Quit                         *\n");
+    printf("*************************************\n");
+    printf("Please enter a choice:");
     int choice;
     scanf("%d",&choice);
     rewind(stdin);
@@ -265,7 +266,8 @@ lead * CreateNewLeadNode(void) {//initial Lead node data
     return new_node;
 }
 
-void PrintAppBook(appBook * appointmentBook) {
+void PrintAppBook(appBook * appointmentBook)
+{
     int index=1;
     while (appointmentBook!=NULL){
         printf("%d:\n",index++);
@@ -365,6 +367,7 @@ void OutputFile(appBook *appointmentBook){
     }
     fclose(fp);
 }
+
 void FprintOneVocabulary(FILE* fp,vocab * character) {//print string on output file
     while (character!=NULL){
         fprintf(fp,"%c",character->word);
@@ -373,10 +376,35 @@ void FprintOneVocabulary(FILE* fp,vocab * character) {//print string on output f
     fprintf(fp,"\n");
 }
 
-void SearchInformationOfUserInput(appBook * keyPoint, appBook_item selectItem) {
+void Search(appBook* firstNode){
+    appBook_item selectItem;
+    while (1){
+        selectItem=SearchManu();
+        if(selectItem==repeat) { printf("rollback to manu\n"); return; }
+        if(selectItem>=who && selectItem<repeat)break;
+        else printf("choice 1~4\n");
+    }
+    SearchUserInput(firstNode,selectItem);
+}
+
+appBook_item SearchManu() {
+    printf("**************************************\n");
+    printf("*    Which key you want to search    *\n");
+    printf("*    ----------------------------    *\n");
+    printf("*     1. who           3. when       *\n");
+    printf("*     2. what          4. where      *\n");
+    printf("*     5. show manu                   *\n");
+    printf("**************************************\n");
+    printf("Please enter a choice:");
+    int choice;
+    scanf("%d",&choice);
+    rewind(stdin);
+    return choice-1;
+}
+
+void SearchUserInput(appBook * keyPoint, appBook_item selectItem) {
     vocab *userInputVocab=NULL;
     printf("Please enter string which you want to search:");
-    rewind(stdin);
     StorageVocabulary(&userInputVocab,stdin);
     int recordData=0;
     while(keyPoint!=NULL){
