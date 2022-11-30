@@ -101,14 +101,14 @@ void Menu(lead*leader) {
                 Modify(leader);
                 break;
             case 3:
-                Delete(leader);
+                //Delete(leader);
                 break;
             case 4:
-                Search(leader);
-                printf("Search --- record at %d\n", Search(leader));
+                //Search(leader);
+                //printf("Search --- record at %d\n", Search(leader));
                 break;
             case 9:
-                Quit(leader);
+                //Quit(leader);
                 quit = 1;
                 break;
             default:
@@ -125,6 +125,7 @@ void EnterRecord(lead*leader){
     ConnectAppBookList(&(leader->listFirstNode), newAppBookNode); //Link data entered to the list
     ++(leader->howMuchNodeInTheList);
 }
+
  void PrintEnterRecord(appBook*newAppBookNode){ //ask user to enter the data
 
 
@@ -295,11 +296,11 @@ void Modify(lead* leader){//change the AppBook one node data
     PrintEnterRecord(modifyDataNode);//read new input information
 }
 
-
 void FreeLead(lead *leader){//free leader
     FreeAppBookList(leader->listFirstNode);
     free(leader);
 }
+
 void FreeAppBookList(appBook *listFirstNode){//free appBook's node
     if(listFirstNode==NULL){//check if it's the last node
         return;
@@ -309,6 +310,7 @@ void FreeAppBookList(appBook *listFirstNode){//free appBook's node
         free(listFirstNode);
 
 }
+
 void FreeAppBook(appBook *listFirstNode){//free who/what/when/where
     FreeVocab(listFirstNode->who);
     listFirstNode->who=NULL;
@@ -319,6 +321,7 @@ void FreeAppBook(appBook *listFirstNode){//free who/what/when/where
     FreeVocab(listFirstNode->where);
     listFirstNode->where=NULL;
 }
+
 void FreeVocab(vocab * word) {//free word's linked list
     if (word == NULL) {
         return;
