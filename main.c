@@ -5,12 +5,13 @@
 #include <string.h>
 #include <assert.h>
 
-
+#define minMatchSearch 5
 #define filenameLong 20
+#define max(a,b) a>b?a:b
 
 typedef char dType;
 enum appointment_book_item{
-    who,what,when,where,repeat
+    titleName=1,content,all,showManu
 };
 
 struct link_list_lead{
@@ -60,7 +61,6 @@ void StorageVocabularyChar(vocab ** vocabularyChar, dType inputChar);
 
 void ConnectAppBookList(appBook **, appBook *);
 
-
 void StorageVocabulary(vocab ** vocabularyFirstChar, FILE * inputFile);
 
 void PrintAppBook(appBook * appointmentBook, FILE * outputFile);
@@ -73,17 +73,17 @@ void FreeLead(lead *leader);
 
 void FreeAppBookList(appBook *listFirstNode);
 
-void FreeAppBook(appBook *listFirstNode);
+void FreeTitleOfAppBook(title * titleFirstNode);
 
 void FreeVocab(vocab * word);
 
-void PrintEnterRecord(appBook*);
+int PrintEnterRecord(appBook * newAppBookNode);
 
 void OutputFile(appBook *appointmentBook);
 
 void SearchUserInput(appBook * keyPoint, appBook_item selectItem);
 
-int StringCompare(vocab*,vocab*);
+int StringCompare(vocab * originKey, vocab * inputData);
 
 appBook_item SearchManu();
 
@@ -94,6 +94,8 @@ title * CreateNewTitle();
 void StorageVocabularyOfTitle(vocab ** vocabularyFirstChar, FILE * inputFile);
 
 void ConnectTitleList(title ** firstTitle, title * newTitle);
+
+void ChoiceModifyTitle(appBook * changeAppBook);
 
 //main program
 int main(){
@@ -106,6 +108,7 @@ void AppointmentBook(void){
     rewind(stdin);
     EnterRecord(appointmentBook);
     PrintAppBook(appointmentBook->listFirstNode, stdout);
+    Search(appointmentBook->listFirstNode);
     Quit(appointmentBook);
     //Menu(appointmentBook); //choose what to do next
 }
@@ -143,22 +146,28 @@ void Menu(lead*leader) {
 
 //enter record
 void EnterRecord(lead*leader){
+    appBook * newAppBookNode = CreateNewAppBookNode(); //create a new node
+    int runEnterRecord=1;
+    while (runEnterRecord==1) {
+        runEnterRecord=PrintEnterRecord(newAppBookNode); //print and scanf the data
+    }
+        ConnectAppBookList(&(leader->listFirstNode), newAppBookNode); //Link data entered to the list
+        ++(leader->howMuchNodeInTheList);
 
-    appBook *newAppBookNode=CreateNewAppBookNode(); //create a new node
-    PrintEnterRecord(newAppBookNode); //print and scanf the data
-
-    ConnectAppBookList(&(leader->listFirstNode), newAppBookNode); //Link data entered to the list
-    ++(leader->howMuchNodeInTheList);
 }
- void PrintEnterRecord(appBook *newAppBookNode){ //ask user to enter the data
+ int PrintEnterRecord(appBook *newAppBookNode){ //ask user to enter the data
     printf("\nEnterRecord -- to enter the title and the thing which you wont to storage\n");
     printf("Please enter title :");
     title *newTitle=CreateNewTitle();
     StorageVocabulary(&(newTitle->titleFirstChar),stdin);
-     StorageVocabularyChar(&(newTitle->titleFirstChar),':');
     printf("Please enter the thing which you wont to storage :");
     StorageVocabulary(&(newTitle->titleStorageData),stdin);
     ConnectTitleList(&(newAppBookNode->firstTitle),newTitle);
+    printf("enter more information? 1:Yes other:No:");
+    int choice;
+    scanf("%d",&choice);
+    getchar();
+    return choice;
  }
 
  //read file
@@ -207,7 +216,6 @@ void StorageVocabularyOfTitle(vocab ** vocabularyFirstChar, FILE * inputFile) {
     while ( (inputCharacter= (dType)fgetc(inputFile)) != ':' ) {//until at the string least
         StorageVocabularyChar(vocabularyFirstChar, inputCharacter);
     }
-    StorageVocabularyChar(vocabularyFirstChar, inputCharacter);
 }
 void StorageVocabulary(vocab ** vocabularyFirstChar, FILE * inputFile) {
     dType inputCharacter;
@@ -236,7 +244,7 @@ void StorageVocabularyChar(vocab ** vocabularyChar, dType inputChar) {
     nowChar->nextWord=newChar;
 }
 
-//create new node
+//create new structure
 vocab * CreateNewCharNode(void) {//initial CharNode data
     vocab *new_node = (vocab *) malloc(sizeof (vocab));
     new_node->word='\0';
@@ -272,7 +280,7 @@ void PrintAppBook(appBook * appointmentBook, FILE * outputFile)
     }
     int index=1;
     while (appointmentBook!=NULL){
-        if(outputFile==stdout)printf("%d:\n",index++);
+        if(outputFile==stdout)printf("#%d\n",index++);
         PrintAppBookOneData(appointmentBook->firstTitle, outputFile);
         putc('\n',outputFile);
         appointmentBook=appointmentBook->next;
@@ -281,6 +289,7 @@ void PrintAppBook(appBook * appointmentBook, FILE * outputFile)
 void PrintAppBookOneData(title * appointmentBookOneData, FILE * outputFile) {
     while(appointmentBookOneData!=NULL){
         PrintOneVocabulary(appointmentBookOneData->titleFirstChar, outputFile);
+        putc(':',outputFile);
         PrintOneVocabulary(appointmentBookOneData->titleStorageData, outputFile);
         putc('\n',outputFile);
         appointmentBookOneData=appointmentBookOneData->nextTitle;
@@ -313,6 +322,7 @@ int ChoiceMenu(){
 //modify
 /*
 void Modify(lead* leader){//change the AppBook one node data
+    PrintAppBook(leader->listFirstNode,stdout);
     int modifyDataIndex;
     while (1){
         printf("Modify which data(index) or send -1 to cancel modify operation:");
@@ -324,50 +334,47 @@ void Modify(lead* leader){//change the AppBook one node data
     }
     appBook * modifyDataNode=leader->listFirstNode;
     while (--modifyDataIndex)modifyDataNode=modifyDataNode->next;//go to the index node
-    FreeAppBook(modifyDataNode);//clear modify node data
-    PrintEnterRecord(modifyDataNode);//read new input information
+    ChoiceModifyTitle(modifyDataNode);//read new input information
+}
+
+void ChoiceModifyTitle(appBook * changeAppBook) {
+
 }*/
 
+
 //free
-/*
 void FreeLead(lead *leader){//free leader
     FreeAppBookList(leader->listFirstNode);
     free(leader);
 }
-
 void FreeAppBookList(appBook *listFirstNode){//free appBook's node
     if(listFirstNode==NULL){//check if it's the last node
         return;
     }
-        FreeAppBookList(listFirstNode->next);
-        FreeAppBook(listFirstNode);
-        free(listFirstNode);
-
+    FreeAppBookList(listFirstNode->next);
+    FreeTitleOfAppBook(listFirstNode->firstTitle);
+    free(listFirstNode);
 }
-
-void FreeAppBook(appBook *listFirstNode){//free who/what/when/where
-    FreeVocab(listFirstNode->who);
-    listFirstNode->who=NULL;
-    FreeVocab(listFirstNode->what);
-    listFirstNode->what=NULL;
-    FreeVocab(listFirstNode->when);
-    listFirstNode->when=NULL;
-    FreeVocab(listFirstNode->where);
-    listFirstNode->where=NULL;
+void FreeTitleOfAppBook(title * titleFirstNode){//free who/what/when/where
+    if(titleFirstNode==NULL)
+        return;
+    FreeTitleOfAppBook(titleFirstNode->nextTitle);
+    FreeVocab(titleFirstNode->titleStorageData);
+    FreeVocab(titleFirstNode->titleFirstChar);
+    free(titleFirstNode);
 }
-
 void FreeVocab(vocab * word) {//free word's linked list
     if (word == NULL) {
         return;
     }
     FreeVocab(word->nextWord);
     free(word);
-}*/
+}
 
 //quit
 void Quit(lead*appBook){
     OutputFile(appBook->listFirstNode);//open a file to print final data
-    //FreeLead(appBook);//free data
+    FreeLead(appBook);//free data
 }
 void OutputFile(appBook *appointmentBook){
     dType fileName[filenameLong];
@@ -379,66 +386,85 @@ void OutputFile(appBook *appointmentBook){
     fclose(fp);
 }
 
-
 //search
-/*
 void Search(appBook* firstNode){
     appBook_item selectItem;
     while (1){
         selectItem=SearchManu();
-        if(selectItem==repeat) { printf("rollback to manu\n"); return; }
-        if(selectItem>=who && selectItem<repeat)break;
+        if(selectItem==showManu) { printf("rollback to manu\n"); return; }
+        if(selectItem>=titleName && selectItem<showManu)break;
         else printf("choice 1~4\n");
     }
     SearchUserInput(firstNode,selectItem);
 }
-
 appBook_item SearchManu() {
     printf("**************************************\n");
     printf("*    Which key you want to search    *\n");
     printf("*    ----------------------------    *\n");
-    printf("*     1. who           3. when       *\n");
-    printf("*     2. what          4. where      *\n");
-    printf("*     5. show manu                   *\n");
+    printf("*     1. title        2. content     *\n");
+    printf("*     3. all          4. show manu   *\n");
     printf("**************************************\n");
     printf("Please enter a choice:");
     int choice;
     scanf("%d",&choice);
     rewind(stdin);
-    return choice-1;
+    return choice;
 }
-
 void SearchUserInput(appBook * keyPoint, appBook_item selectItem) {
     vocab *userInputVocab=NULL;
     printf("Please enter string which you want to search:");
-    StorageVocabulary(&userInputVocab,stdin);
+    StorageVocabulary(&userInputVocab,stdin);//user input
+
     int recordData=0;
     while(keyPoint!=NULL){
-            if(StringCompare(*SelectADifferentRecordItem(keyPoint,selectItem),userInputVocab)){
-                printf("%d:\n",++recordData);
-                PrintAppBookOneData(keyPoint);
+        title *nowKeyPointTitle=keyPoint->firstTitle;
+        int find=0;
+        while(nowKeyPointTitle!=NULL) {
+            if (selectItem != content)//selectItem==titleName && all
+                find+=StringCompare(nowKeyPointTitle->titleFirstChar, userInputVocab);
+            if (selectItem != titleName) //selectItem==content && all
+                find+=StringCompare(nowKeyPointTitle->titleStorageData, userInputVocab);
+            if(find){//if find
+                recordData++;//find matching
+                PrintAppBookOneData(keyPoint->firstTitle, stdout);
                 putchar('\n');
+                break;
             }
-                keyPoint=keyPoint->next;
+            find=0;
+            nowKeyPointTitle=nowKeyPointTitle->nextTitle;
+        }
+        keyPoint=keyPoint->next;
     }
     FreeVocab(userInputVocab);//free memory of user input sting which use link list
     if(recordData==0)
         printf("could not find it\n");
+    else
+        printf("find %d matching information.\n",recordData);
 }
-
-int StringCompare(vocab*key,vocab*inputData)
+int StringCompare(vocab*originKey, vocab*inputData)
 {
-    while(key!=NULL && inputData!=NULL){
-            if(key->word==inputData->word){
-                key=key->nextWord;
+    vocab *inputFirstChar=inputData;
+    int matchSum=0,maxMatch=0;
+    while( inputData != NULL && originKey!=NULL){
+            if(originKey->word == inputData->word){
+                originKey=originKey->nextWord;
                 inputData=inputData->nextWord;
+                matchSum++;
+            }else {
+                originKey = originKey->nextWord;
+                maxMatch= max(maxMatch,matchSum);
+                matchSum=0;
+                inputData=inputFirstChar;
             }
-            else break;
         }
-        if(key==NULL && inputData==NULL)
+        if(inputData == NULL) {
+            printf("Find all match data.\n");
             return 1;
-        else return 0;
-}*/
+        }else if(maxMatch>minMatchSearch){
+            printf("The input string is compared from the beginning matching %d words.\n",maxMatch);
+            return 1;
+        }else return 0;
+}
 
 //delete
 /*
@@ -467,7 +493,7 @@ void RemoveChoiceAppBookNode(appBook ** keyPoint, int removeIndex) {
     }
     if(removeIndex==1) *keyPoint=nowNode->next;
     else frontNode->next=nowNode->next;
-    FreeAppBook(nowNode);
+    FreeTitleOfAppBook(nowNode);
     free(nowNode);
 }
 */
