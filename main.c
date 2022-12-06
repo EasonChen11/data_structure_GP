@@ -65,7 +65,7 @@ void StorageVocabulary(vocab **, FILE *);
 
 void PrintAppBook(appBook *);
 
-void PrintAppBookOneData(appBook *);
+void PrintAppBookOneData(title * appointmentBookOneData);
 
 void PrintOneVocabulary(vocab *);
 
@@ -106,10 +106,10 @@ void AppointmentBook(void){
     lead * appointmentBook = ReadFromFile(); //rad the input file
     PrintAppBook(appointmentBook->listFirstNode);
     rewind(stdin);
-    Menu(appointmentBook); //choose what to do next
+    //Menu(appointmentBook); //choose what to do next
 }
 
-
+/*
 void Menu(lead*leader) {
     int quit = 0;
     while ( !quit ) {
@@ -162,7 +162,7 @@ void EnterRecord(lead*leader){
     printf("Please enter WHERE you have an appointment at: ");
     StorageVocabulary(&(newAppBookNode->where),stdin);
 
-}
+}*/
 
 lead * ReadFromFile(void){
     lead * newLead = CreateNewLeadNode();
@@ -175,17 +175,18 @@ lead * ReadFromFile(void){
         return newLead;
     }
 
-    while ((inputCharacter = (dType)fgetc(inputFile))!=EOF){//check whether read end of file
+    while ((inputCharacter = (dType)fgetc(inputFile))!=EOF){//avoid file is empty
         appBook * newDataNode = CreateNewAppBookNode();//create a new appoint_book which isn't connect to the list
 
-        do  {//title read \n cancel
+        do  {//title read \n  or EOF cancel
             title * newTitle=CreateNewTitle();
             ConnectVocabularyChar(&(newTitle->titleFirstChar),
                                   inputCharacter);//must do it.Because this word is gotten avoid lost this word.
             StorageVocabularyOfTitle(&(newTitle->titleFirstChar),inputFile);
             StorageVocabulary(&(newTitle->titleStorageData),inputFile);
             ConnectTitleList(&(newDataNode->firstTitle),newTitle);
-        }while((inputCharacter = (dType)fgetc(inputFile))!='\n');
+            inputCharacter = (dType)fgetc(inputFile);
+        }while(inputCharacter!='\n' && inputCharacter!=EOF);//the end of one node or end of file
         ++(newLead->howMuchNodeInTheList);
         ConnectAppBookList(&(newLead->listFirstNode), newDataNode);//let created node link to lead node
     }
@@ -218,7 +219,7 @@ void StorageVocabulary(vocab ** vocabularyFirstChar, FILE * inputFile) {
         ConnectVocabularyChar(vocabularyFirstChar, inputCharacter);
     }
 }
-
+/*
 int ChoiceMenu(){
     printf("*************************************\n");
     printf("*      Appointment Book Services    *\n");
@@ -233,7 +234,7 @@ int ChoiceMenu(){
     scanf("%d",&choice);
     rewind(stdin);
     return choice;
-}
+}*/
 
 void ConnectAppBookList(appBook ** firstNode, appBook * newData) {
     if((*firstNode)==NULL){//first is NULL
@@ -295,21 +296,19 @@ void PrintAppBook(appBook * appointmentBook)
     int index=1;
     while (appointmentBook!=NULL){
         printf("%d:\n",index++);
-        PrintAppBookOneData(appointmentBook);
+        PrintAppBookOneData(appointmentBook->firstTitle);
         putchar('\n');
         appointmentBook=appointmentBook->next;
     }
 }
 
-void PrintAppBookOneData(appBook * appointmentBookOneData) {
-    printf("Who:");
-    PrintOneVocabulary(appointmentBookOneData->who);
-    printf("What:");
-    PrintOneVocabulary(appointmentBookOneData->what);
-    printf("When:");
-    PrintOneVocabulary(appointmentBookOneData->when);
-    printf("Where:");
-    PrintOneVocabulary(appointmentBookOneData->where);
+void PrintAppBookOneData(title * appointmentBookOneData) {
+    while(appointmentBookOneData!=NULL){
+        PrintOneVocabulary(appointmentBookOneData->titleFirstChar);
+        PrintOneVocabulary(appointmentBookOneData->titleStorageData);
+        putchar('\n');
+        appointmentBookOneData=appointmentBookOneData->nextTitle;
+    }
 }
 
 void PrintOneVocabulary(vocab * character) {
@@ -317,9 +316,8 @@ void PrintOneVocabulary(vocab * character) {
         putchar(character->word);
         character=character->nextWord;
     }
-    putchar('\n');
 }
-
+/*
 void Modify(lead* leader){//change the AppBook one node data
     int modifyDataIndex;
     while (1){
@@ -487,3 +485,4 @@ void RemoveChoiceAppBookNode(appBook ** keyPoint, int removeIndex) {
     FreeAppBook(nowNode);
     free(nowNode);
 }
+*/
