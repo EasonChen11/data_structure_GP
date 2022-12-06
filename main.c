@@ -44,7 +44,7 @@ void Menu(lead*leader);
 void EnterRecord(lead*appBook);
 void ViewDay(lead*appBook);
 void ViewWeek(lead*appBook);
-void Modify(lead*appBook);
+void Modify(lead*leader);
 void Delete(lead*appBook);
 void Search(appBook * firstNode);
 void Quit(lead*appBook);
@@ -95,7 +95,15 @@ void StorageVocabularyOfTitle(vocab ** vocabularyFirstChar, FILE * inputFile);
 
 void ConnectTitleList(title ** firstTitle, title * newTitle);
 
-void ChoiceModifyTitle(appBook * changeAppBook);
+appBook_item ModifyManu();
+
+void ModifyUserNeedAppBook(appBook * modifyDataNode, appBook_item selectItem);
+
+title * ModifyUserNeedTitleOrContent(title * firstTitle);
+
+void VocabChange(vocab * modifyTitleName);
+
+int PrintTitleWithIndexAndBackSize(title * pTitle);
 
 //main program
 int main(){
@@ -104,12 +112,14 @@ int main(){
 }
 void AppointmentBook(void){
     lead * appointmentBook = ReadFromFile(); //rad the input file
-    PrintAppBook(appointmentBook->listFirstNode, stdout);
+    //PrintAppBook(appointmentBook->listFirstNode, stdout);
     rewind(stdin);
-    EnterRecord(appointmentBook);
+//    EnterRecord(appointmentBook);
+//    PrintAppBook(appointmentBook->listFirstNode, stdout);
+//    Search(appointmentBook->listFirstNode);
+    Modify(appointmentBook);
     PrintAppBook(appointmentBook->listFirstNode, stdout);
-    Search(appointmentBook->listFirstNode);
-    Quit(appointmentBook);
+//    Quit(appointmentBook);
     //Menu(appointmentBook); //choose what to do next
 }
 
@@ -320,26 +330,104 @@ int ChoiceMenu(){
 }*/
 
 //modify
-/*
 void Modify(lead* leader){//change the AppBook one node data
     PrintAppBook(leader->listFirstNode,stdout);
     int modifyDataIndex;
-    while (1){
-        printf("Modify which data(index) or send -1 to cancel modify operation:");
+    while (1){//choice node
+        printf("Modify which data(index) or send 0 to cancel modify operation or send -1 use search to find you need:");
         scanf("%d",&modifyDataIndex);
         rewind(stdin);
-        if(modifyDataIndex==-1){ printf("rollback to manu\n"); return; }
+        if(modifyDataIndex==0){ printf("rollback to manu\n"); return; }
+        if(modifyDataIndex==-1) { Search(leader->listFirstNode); continue; }
+
         if(modifyDataIndex<=leader->howMuchNodeInTheList && modifyDataIndex>0)break;//index is legal
         printf("Over index.\nPlease enter again.\n");
     }
     appBook * modifyDataNode=leader->listFirstNode;
     while (--modifyDataIndex)modifyDataNode=modifyDataNode->next;//go to the index node
-    ChoiceModifyTitle(modifyDataNode);//read new input information
+    appBook_item selectItem;
+    while (1){//choice title, content, all
+        selectItem= ModifyManu();
+        if(selectItem>=titleName && selectItem<showManu)break;
+        printf("choice 1~3\n");
+    }
+    ModifyUserNeedAppBook(modifyDataNode, selectItem);
 }
-
-void ChoiceModifyTitle(appBook * changeAppBook) {
-
-}*/
+appBook_item ModifyManu() {
+    while (1){
+        printf("**************************************\n");
+        printf("*    Which key you want to modify    *\n");
+        printf("*    ----------------------------    *\n");
+        printf("*     1. title        2. content     *\n");
+        printf("*     3. all                         *\n");
+        printf("**************************************\n");
+        printf("Please enter a choice:");
+        int choice;
+        scanf("%d",&choice);
+        rewind(stdin);
+        return choice;
+    }
+}
+void ModifyUserNeedAppBook(appBook * modifyDataNode, appBook_item selectItem) {
+    title *modifyTitle;
+    switch (selectItem) {
+        case all:
+        case titleName:
+            modifyTitle=ModifyUserNeedTitleOrContent(modifyDataNode->firstTitle);
+            VocabChange(modifyTitle->titleFirstChar);
+            if (selectItem==titleName)break;
+        case content:
+            modifyTitle=ModifyUserNeedTitleOrContent(modifyDataNode->firstTitle);
+            VocabChange(modifyTitle->titleStorageData);
+    }
+}
+title * ModifyUserNeedTitleOrContent(title * firstTitle) {
+    title *nowTitle=firstTitle,*modifyTitle=firstTitle;
+    int totalTitle,modifyTitleIndex;
+    totalTitle=PrintTitleWithIndexAndBackSize(nowTitle);
+    while (1){//choice which title to modify
+        printf("Modify which title:");
+        scanf("%d",&modifyTitleIndex);
+        rewind(stdin);
+        if(modifyTitleIndex<=totalTitle && modifyTitleIndex>0)break;//index is legal
+        printf("Over index.\nPlease enter again.\n");
+    }
+    while (--modifyTitleIndex)modifyTitle=modifyTitle->nextTitle;//go to the index node
+    return modifyTitle;
+}
+int PrintTitleWithIndexAndBackSize(title * pTitle) {
+    int totalTitle=1;
+    while (pTitle!=NULL){//show index and title
+        printf("%d. ",totalTitle++);
+        PrintOneVocabulary(pTitle->titleFirstChar,stdout);
+        putchar(':');
+        PrintOneVocabulary(pTitle->titleStorageData,stdout);
+        putchar('\n');
+        pTitle=pTitle->nextTitle;
+    }
+    return totalTitle-1;
+}
+void VocabChange(vocab * modifyTitleName) {
+    vocab *userInputVocab=NULL,*beforeModifyTitleChar=modifyTitleName;//before storage before node
+    printf("Please enter string for title you want to become:");
+    StorageVocabulary(&userInputVocab,stdin);//user input
+    while (userInputVocab != NULL){
+        if(modifyTitleName!=NULL){
+            modifyTitleName->word= userInputVocab->word;
+        }else{
+            StorageVocabularyChar(&(beforeModifyTitleChar),userInputVocab->word);
+            modifyTitleName=beforeModifyTitleChar->nextWord;//go to next have storaged data
+        }
+        beforeModifyTitleChar=modifyTitleName;
+        modifyTitleName=modifyTitleName->nextWord;
+        userInputVocab=userInputVocab->nextWord;
+    }
+    if(modifyTitleName!=NULL){
+        FreeVocab(modifyTitleName);
+        beforeModifyTitleChar->nextWord=NULL;//after free variable will carry itself located
+    }
+    FreeVocab(userInputVocab);//free memory of user input sting which use link list
+}
 
 
 //free
@@ -391,7 +479,7 @@ void Search(appBook* firstNode){
     appBook_item selectItem;
     while (1){
         selectItem=SearchManu();
-        if(selectItem==showManu) { printf("rollback to manu\n"); return; }
+        if(selectItem==showManu) { printf("rollback\n"); return; }
         if(selectItem>=titleName && selectItem<showManu)break;
         else printf("choice 1~4\n");
     }
@@ -402,7 +490,7 @@ appBook_item SearchManu() {
     printf("*    Which key you want to search    *\n");
     printf("*    ----------------------------    *\n");
     printf("*     1. title        2. content     *\n");
-    printf("*     3. all          4. show manu   *\n");
+    printf("*     3. all          4. back        *\n");
     printf("**************************************\n");
     printf("Please enter a choice:");
     int choice;
@@ -415,7 +503,7 @@ void SearchUserInput(appBook * keyPoint, appBook_item selectItem) {
     printf("Please enter string which you want to search:");
     StorageVocabulary(&userInputVocab,stdin);//user input
 
-    int recordData=0;
+    int recordData=0,indexOfAppBook=1;
     while(keyPoint!=NULL){
         title *nowKeyPointTitle=keyPoint->firstTitle;
         int find=0;
@@ -426,6 +514,7 @@ void SearchUserInput(appBook * keyPoint, appBook_item selectItem) {
                 find+=StringCompare(nowKeyPointTitle->titleStorageData, userInputVocab);
             if(find){//if find
                 recordData++;//find matching
+                printf("#%d\n",indexOfAppBook);
                 PrintAppBookOneData(keyPoint->firstTitle, stdout);
                 putchar('\n');
                 break;
@@ -434,6 +523,7 @@ void SearchUserInput(appBook * keyPoint, appBook_item selectItem) {
             nowKeyPointTitle=nowKeyPointTitle->nextTitle;
         }
         keyPoint=keyPoint->next;
+        indexOfAppBook++;
     }
     FreeVocab(userInputVocab);//free memory of user input sting which use link list
     if(recordData==0)
