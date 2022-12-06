@@ -18,11 +18,13 @@ struct link_list_lead{
     struct appointment_book *listFirstNode;
 };
 struct appointment_book{
-    struct storage_character *who;
-    struct storage_character *what;
-    struct storage_character *when;
-    struct storage_character *where;
+    struct lab_title *firstTitle;
     struct appointment_book *next;
+};
+struct lab_title{
+    struct storage_character *titleFirstChar;
+    struct storage_character *titleStorageData;
+    struct lab_title *nextTitle;
 };
 struct storage_character{
     dType word;
@@ -32,6 +34,7 @@ struct storage_character{
 typedef enum appointment_book_item appBook_item;
 typedef struct link_list_lead lead;
 typedef struct appointment_book appBook;
+typedef struct lab_title title;
 typedef struct storage_character vocab;
 
 void AppointmentBook(void);
@@ -53,11 +56,10 @@ appBook * CreateNewAppBookNode(void);
 
 vocab * CreateNewCharNode(void);
 
-void ConnectVocabularyChar(vocab **, dType);
+void ConnectVocabularyChar(vocab ** vocabularyChar, dType inputChar);
 
 void ConnectAppBookList(appBook **, appBook *);
 
-void StorageAppBookInformation(appBook *, FILE *);
 
 void StorageVocabulary(vocab **, FILE *);
 
@@ -85,11 +87,15 @@ void SearchUserInput(appBook * keyPoint, appBook_item selectItem);
 
 int StringCompare(vocab*,vocab*);
 
-vocab ** SelectADifferentRecordItem(appBook * keyPoint, appBook_item bookItem);
-
 appBook_item SearchManu();
 
 void RemoveChoiceAppBookNode(appBook ** keyPoint, int removeIndex);
+
+title * CreateNewTitle();
+
+void StorageVocabularyOfTitle(vocab ** vocabularyFirstChar, FILE * inputFile);
+
+void ConnectTitleList(title ** firstTitle, title * newTitle);
 
 int main(){
     AppointmentBook();
@@ -171,8 +177,15 @@ lead * ReadFromFile(void){
 
     while ((inputCharacter = (dType)fgetc(inputFile))!=EOF){//check whether read end of file
         appBook * newDataNode = CreateNewAppBookNode();//create a new appoint_book which isn't connect to the list
-        ConnectVocabularyChar(&(newDataNode->who), inputCharacter);//must do it.Because this word is gotten avoid lost this word.
-        StorageAppBookInformation(newDataNode, inputFile);//one AppBook node
+
+        do  {//title read \n cancel
+            title * newTitle=CreateNewTitle();
+            ConnectVocabularyChar(&(newTitle->titleFirstChar),
+                                  inputCharacter);//must do it.Because this word is gotten avoid lost this word.
+            StorageVocabularyOfTitle(&(newTitle->titleFirstChar),inputFile);
+            StorageVocabulary(&(newTitle->titleStorageData),inputFile);
+            ConnectTitleList(&(newDataNode->firstTitle),newTitle);
+        }while((inputCharacter = (dType)fgetc(inputFile))!='\n');
         ++(newLead->howMuchNodeInTheList);
         ConnectAppBookList(&(newLead->listFirstNode), newDataNode);//let created node link to lead node
     }
@@ -180,24 +193,24 @@ lead * ReadFromFile(void){
     return newLead;
 }
 
-void StorageAppBookInformation(appBook * AppBookData, FILE * inputFile) {
-    appBook_item selectItem=who;
-    vocab ** vocabularyFirstChar;
-    while (selectItem!=repeat) {//who->what->when->where finish one appoint_book node
-        vocabularyFirstChar=SelectADifferentRecordItem(AppBookData,selectItem++);//to next Item
-        StorageVocabulary(vocabularyFirstChar,inputFile);
-    }//one AppBook node
+void ConnectTitleList(title ** firstTitle, title * newTitle) {
+    if((*firstTitle)==NULL){//first is NULL
+        (*firstTitle)=newTitle;
+        return;
+    }
+    title * nowTitleNode=*firstTitle;
+    while(nowTitleNode->nextTitle!=NULL) nowTitleNode= nowTitleNode->nextTitle;//find the least node
+    nowTitleNode->nextTitle=newTitle;
 }
 
-vocab ** SelectADifferentRecordItem(appBook * keyPoint, appBook_item bookItem) {
-    switch (bookItem) {
-        case who:   return &(keyPoint->who);
-        case what:  return &(keyPoint->what);
-        case when:  return &(keyPoint->when);
-        case where: return &(keyPoint->where);
-        default:    return NULL;
+void StorageVocabularyOfTitle(vocab ** vocabularyFirstChar, FILE * inputFile) {
+    dType inputCharacter;
+    while ( (inputCharacter= (dType)fgetc(inputFile)) != ':' ) {//until at the string least
+        ConnectVocabularyChar(vocabularyFirstChar, inputCharacter);
     }
+    ConnectVocabularyChar(vocabularyFirstChar, inputCharacter);
 }
+
 
 void StorageVocabulary(vocab ** vocabularyFirstChar, FILE * inputFile) {
     dType inputCharacter;
@@ -232,9 +245,9 @@ void ConnectAppBookList(appBook ** firstNode, appBook * newData) {
     nowAppBookNode->next=newData;
 }
 
-void ConnectVocabularyChar(vocab ** vocabularyChar, dType character) {
+void ConnectVocabularyChar(vocab ** vocabularyChar, dType inputChar) {
     vocab * newChar = CreateNewCharNode();//create a node save the character
-    newChar->word=character;
+    newChar->word=inputChar;
     if((*vocabularyChar)==NULL){//first is NULL
         (*vocabularyChar)=newChar;
         return;
@@ -251,12 +264,17 @@ vocab * CreateNewCharNode(void) {//initial CharNode data
     return new_node;
 }
 
+title * CreateNewTitle() {
+    title *newTile=(title*) malloc(sizeof (title));
+    newTile->titleFirstChar=NULL;
+    newTile->titleStorageData=NULL;
+    newTile->nextTitle=NULL;
+    return newTile;
+}
+
 appBook * CreateNewAppBookNode(void) {//initial AppBook data
     appBook *new_node = (appBook *) malloc(sizeof (appBook));
-    new_node->who=NULL;
-    new_node->when=NULL;
-    new_node->what=NULL;
-    new_node->where=NULL;
+    new_node->firstTitle=NULL;
     new_node->next=NULL;
     return new_node;
 }
