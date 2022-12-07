@@ -112,18 +112,11 @@ int main(){
 }
 void AppointmentBook(void){
     lead * appointmentBook = ReadFromFile(); //rad the input file
-    //PrintAppBook(appointmentBook->listFirstNode, stdout);
     rewind(stdin);
-//    EnterRecord(appointmentBook);
-//    PrintAppBook(appointmentBook->listFirstNode, stdout);
-//    Search(appointmentBook->listFirstNode);
-    Modify(appointmentBook);
     PrintAppBook(appointmentBook->listFirstNode, stdout);
-//    Quit(appointmentBook);
-    //Menu(appointmentBook); //choose what to do next
+    Menu(appointmentBook); //choose what to do next
 }
 
-/*
 void Menu(lead*leader) {
     int quit = 0;
     while ( !quit ) {
@@ -142,7 +135,7 @@ void Menu(lead*leader) {
                 Search(leader->listFirstNode);
                 break;
             case 5:
-                PrintAppBook(leader->listFirstNode);
+                PrintAppBook(leader->listFirstNode,stdout);
                 break;
             case 9:
                 Quit(leader);
@@ -152,7 +145,22 @@ void Menu(lead*leader) {
                 printf("Please enter a choice 1-4 or 9 to quit\n");
         }
     }
-}*/
+}
+int ChoiceMenu(){
+    printf("*************************************\n");
+    printf("*      Appointment Book Services    *\n");
+    printf("*      -------------------------    *\n");
+    printf("*   1. Enter Record     3. Delete   *\n");
+    printf("*   2. Modify           4. Search   *\n");
+    printf("*   5. Print Appoint Book           *\n");
+    printf("*   9. Quit                         *\n");
+    printf("*************************************\n");
+    printf("Please enter a choice:");
+    int choice;
+    scanf("%d",&choice);
+    rewind(stdin);
+    return choice;
+}
 
 //enter record
 void EnterRecord(lead*leader){
@@ -312,23 +320,6 @@ void PrintOneVocabulary(vocab * character, FILE * outputFile) {
     }
 }
 
-/*
-int ChoiceMenu(){
-    printf("*************************************\n");
-    printf("*      Appointment Book Services    *\n");
-    printf("*      -------------------------    *\n");
-    printf("*   1. Enter Record     3. Delete   *\n");
-    printf("*   2. Modify           4. Search   *\n");
-    printf("*   5. Print Appoint Book           *\n");
-    printf("*   9. Quit                         *\n");
-    printf("*************************************\n");
-    printf("Please enter a choice:");
-    int choice;
-    scanf("%d",&choice);
-    rewind(stdin);
-    return choice;
-}*/
-
 //modify
 void Modify(lead* leader){//change the AppBook one node data
     PrintAppBook(leader->listFirstNode,stdout);
@@ -428,7 +419,6 @@ void VocabChange(vocab * modifyTitleName) {
     }
     FreeVocab(userInputVocab);//free memory of user input sting which use link list
 }
-
 
 //free
 void FreeLead(lead *leader){//free leader
@@ -557,10 +547,9 @@ int StringCompare(vocab*originKey, vocab*inputData)
 }
 
 //delete
-/*
 void Delete(lead* leader){
     printf("Your Appoint Book\n");
-    PrintAppBook(leader->listFirstNode);
+    PrintAppBook(leader->listFirstNode,stdout);
     printf("which data you wont to remove (input index) or send -1 to cancel the delete operation:");
     int removeIndex;
     while(1) {
@@ -573,7 +562,6 @@ void Delete(lead* leader){
     RemoveChoiceAppBookNode(&(leader->listFirstNode), removeIndex);
     printf("\nremove finish~\n");
 }
-
 void RemoveChoiceAppBookNode(appBook ** keyPoint, int removeIndex) {
     int index=1;
     appBook *frontNode,*nowNode=*(keyPoint);
@@ -583,7 +571,7 @@ void RemoveChoiceAppBookNode(appBook ** keyPoint, int removeIndex) {
     }
     if(removeIndex==1) *keyPoint=nowNode->next;
     else frontNode->next=nowNode->next;
-    FreeTitleOfAppBook(nowNode);
+    FreeTitleOfAppBook(nowNode->firstTitle);
     free(nowNode);
 }
-*/
+
