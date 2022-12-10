@@ -174,14 +174,14 @@ void EnterRecord(lead*leader){
 
 }
  int PrintEnterRecord(appBook *newAppBookNode){ //ask user to enter the data
-    printf("\nEnterRecord -- to enter the title and the thing which you wont to storage\n");
-    printf("Please enter title :");
+    printf("\nEnterRecord -- to enter the title and the content which you want to storage\n");
+    printf("Please enter title :(ex. who,what,when,where......)\n");
     title *newTitle=CreateNewTitle();
     StorageVocabulary(&(newTitle->titleFirstChar),stdin);
-    printf("Please enter the thing which you wont to storage :");
+    printf("Please enter any content of the title that you want to store :\n");
     StorageVocabulary(&(newTitle->titleStorageData),stdin);
     ConnectTitleList(&(newAppBookNode->firstTitle),newTitle);
-    printf("enter more information? 1:Yes other:No:");
+    printf("enter more information?(1:Yes other:No) :");
     int choice;
     scanf("%d",&choice);
     getchar();
@@ -206,7 +206,7 @@ lead * ReadFromFile(void){
         do  {//title read \n  or EOF cancel
             title * newTitle=CreateNewTitle();
             StorageVocabularyChar(&(newTitle->titleFirstChar),
-                                  inputCharacter);//must do it.Because this word is gotten avoid lost this word.
+                                  inputCharacter);//must do it.Save the word in order to store each letter(of this word)to linked list
             StorageVocabularyOfTitle(&(newTitle->titleFirstChar),inputFile);
             StorageVocabulary(&(newTitle->titleStorageData),inputFile);
             ConnectTitleList(&(newDataNode->firstTitle),newTitle);
@@ -321,14 +321,14 @@ void PrintOneVocabulary(vocab * character, FILE * outputFile) {
 }
 
 //modify
-void Modify(lead* leader){//change the AppBook one node data
+void Modify(lead* leader){//change one node data of the AppBook
     PrintAppBook(leader->listFirstNode,stdout);
     int modifyDataIndex;
     while (1){//choice node
-        printf("Modify which data(index) or send 0 to cancel modify operation or send -1 use search to find you need:");
+        printf("Please enter which data to modify(index) --input 0 (to cancel modify operation) or the number(the data you want to modify):");
         scanf("%d",&modifyDataIndex);
         rewind(stdin);
-        if(modifyDataIndex==0){ printf("rollback to manu\n"); return; }
+        if(modifyDataIndex==0){ printf("rollback to menu\n"); return; }
         if(modifyDataIndex==-1) { Search(leader->listFirstNode); continue; }
 
         if(modifyDataIndex<=leader->howMuchNodeInTheList && modifyDataIndex>0)break;//index is legal
@@ -346,12 +346,12 @@ void Modify(lead* leader){//change the AppBook one node data
 }
 appBook_item ModifyManu() {
     while (1){
-        printf("**************************************\n");
-        printf("*    Which key you want to modify    *\n");
-        printf("*    ----------------------------    *\n");
-        printf("*     1. title        2. content     *\n");
-        printf("*     3. all                         *\n");
-        printf("**************************************\n");
+        printf("********************************************************\n");
+        printf("*             Which key you want to modify             *\n");
+        printf("*------------------------------------------------------*\n");
+        printf("*     1. title(who,what,when,ect)    2. content        *\n");
+        printf("*     3. all                                           *\n");
+        printf("********************************************************\n");
         printf("Please enter a choice:");
         int choice;
         scanf("%d",&choice);
@@ -407,7 +407,7 @@ void VocabChange(vocab * modifyTitleName) {
             modifyTitleName->word= userInputVocab->word;
         }else{
             StorageVocabularyChar(&(beforeModifyTitleChar),userInputVocab->word);
-            modifyTitleName=beforeModifyTitleChar->nextWord;//go to next have storaged data
+            modifyTitleName=beforeModifyTitleChar->nextWord;//go to next data which have been stored
         }
         beforeModifyTitleChar=modifyTitleName;
         modifyTitleName=modifyTitleName->nextWord;
@@ -417,7 +417,7 @@ void VocabChange(vocab * modifyTitleName) {
         FreeVocab(modifyTitleName);
         beforeModifyTitleChar->nextWord=NULL;//after free variable will carry itself located
     }
-    FreeVocab(userInputVocab);//free memory of user input sting which use link list
+    FreeVocab(userInputVocab);//free memory of user input string which is stored by linked list
 }
 
 //free
@@ -480,7 +480,7 @@ appBook_item SearchManu() {
     printf("*    Which key you want to search    *\n");
     printf("*    ----------------------------    *\n");
     printf("*     1. title        2. content     *\n");
-    printf("*     3. all          4. back        *\n");
+    printf("*     3. all          4. back to menu*\n");
     printf("**************************************\n");
     printf("Please enter a choice:");
     int choice;
@@ -550,12 +550,12 @@ int StringCompare(vocab*originKey, vocab*inputData)
 void Delete(lead* leader){
     printf("Your Appoint Book\n");
     PrintAppBook(leader->listFirstNode,stdout);
-    printf("which data you wont to remove (input index) or send -1 to cancel the delete operation:");
+    printf("which data you want to remove (input index) or send -1 to cancel the delete operation:");
     int removeIndex;
     while(1) {
         scanf("%d", &removeIndex);
-        if(removeIndex==-1)return;
-        if(removeIndex>0 && removeIndex<=leader->howMuchNodeInTheList)break;
+        if(removeIndex==-1)return; //back to menu
+        if(removeIndex>0 && removeIndex<=leader->howMuchNodeInTheList)break; //delete the data you choose
         else printf("choice 1~%d\n",leader->howMuchNodeInTheList);
     }
     leader->howMuchNodeInTheList--;
@@ -565,11 +565,11 @@ void Delete(lead* leader){
 void RemoveChoiceAppBookNode(appBook ** keyPoint, int removeIndex) {
     int index=1;
     appBook *frontNode,*nowNode=*(keyPoint);
-    while (index++ < removeIndex) {
+    while (index++ < removeIndex) {//find the node you want to delete
         frontNode=nowNode;
         nowNode = nowNode->next;
     }
-    if(removeIndex==1) *keyPoint=nowNode->next;
+    if(removeIndex==1) *keyPoint=nowNode->next; //only have one data
     else frontNode->next=nowNode->next;
     FreeTitleOfAppBook(nowNode->firstTitle);
     free(nowNode);
