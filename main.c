@@ -42,8 +42,6 @@ void AppointmentBook(void);
 int ChoiceMenu();
 void Menu(lead*leader);
 void EnterRecord(lead*appBook);
-void ViewDay(lead*appBook);
-void ViewWeek(lead*appBook);
 void Modify(lead*leader);
 void Delete(lead*appBook);
 void Search(appBook * firstNode);
@@ -525,25 +523,25 @@ int StringCompare(vocab*originKey, vocab*inputData)
 {
     vocab *inputFirstChar=inputData;
     int matchSum=0,maxMatch=0;
-    while( inputData != NULL && originKey!=NULL){
-            if(originKey->word == inputData->word){
-                originKey=originKey->nextWord;
+    while( inputData != NULL && originKey!=NULL){//end of one of string is end of line
+            if(originKey->word == inputData->word){//if character are same
+                originKey=originKey->nextWord;//go to next word
                 inputData=inputData->nextWord;
                 matchSum++;
-            }else {
+            }else {//if the word not match
                 originKey = originKey->nextWord;
-                maxMatch= max(maxMatch,matchSum);
+                maxMatch= max(maxMatch,matchSum);//storage max match word
                 matchSum=0;
-                inputData=inputFirstChar;
+                inputData=inputFirstChar;//check string back to first word
             }
         }
-        if(inputData == NULL) {
+        if(inputData == NULL) {//if match all word
             printf("Find all match data.\n");
             return 1;
-        }else if(maxMatch>minMatchSearch){
+        }else if(maxMatch>minMatchSearch){//if the match items bigger than minMatchSearch show is found
             printf("The input string is compared from the beginning matching %d words.\n",maxMatch);
             return 1;
-        }else return 0;
+        }else return 0;//else not found
 }
 
 //delete
