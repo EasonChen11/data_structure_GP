@@ -11,7 +11,7 @@
 
 typedef char dType;
 enum appointment_book_item{
-    titleName=1,content,all,showManu
+    titleName=1,content,all,showMenu
 };
 
 struct link_list_lead{
@@ -83,7 +83,7 @@ void SearchUserInput(appBook * keyPoint, appBook_item selectItem);
 
 int StringCompare(vocab * originKey, vocab * inputData);
 
-appBook_item SearchManu();
+appBook_item SearchMenu();
 
 void RemoveChoiceAppBookNode(appBook ** keyPoint, int removeIndex);
 
@@ -93,7 +93,7 @@ void StorageVocabularyOfTitle(vocab ** vocabularyFirstChar, FILE * inputFile);
 
 void ConnectTitleList(title ** firstTitle, title * newTitle);
 
-appBook_item ModifyManu();
+appBook_item ModifyMenu();
 
 void ModifyUserNeedAppBook(appBook * modifyDataNode, appBook_item selectItem);
 
@@ -336,13 +336,13 @@ void Modify(lead* leader){//change one node data of the AppBook
     while (--modifyDataIndex)modifyDataNode=modifyDataNode->next;//go to the index node
     appBook_item selectItem;
     while (1){//choice title, content, all
-        selectItem= ModifyManu();
-        if(selectItem>=titleName && selectItem<showManu)break;
+        selectItem= ModifyMenu();
+        if(selectItem>=titleName && selectItem<showMenu)break;
         printf("choice 1~3\n");
     }
     ModifyUserNeedAppBook(modifyDataNode, selectItem);
 }
-appBook_item ModifyManu() {
+appBook_item ModifyMenu() {
     while (1){
         printf("********************************************************\n");
         printf("*             Which key you want to modify             *\n");
@@ -466,14 +466,14 @@ void OutputFile(appBook *appointmentBook){
 void Search(appBook* firstNode){
     appBook_item selectItem;
     while (1){
-        selectItem=SearchManu();
-        if(selectItem==showManu) { printf("rollback\n"); return; }
-        if(selectItem>=titleName && selectItem<showManu)break;
+        selectItem= SearchMenu();
+        if(selectItem==showMenu) { printf("rollback\n"); return; }
+        if(selectItem>=titleName && selectItem<showMenu)break;
         else printf("choice 1~4\n");
     }
     SearchUserInput(firstNode,selectItem);
 }
-appBook_item SearchManu() {
+appBook_item SearchMenu() {
     printf("**************************************\n");
     printf("*    Which key you want to search    *\n");
     printf("*    ----------------------------    *\n");
