@@ -320,7 +320,7 @@ void Modify(lead* leader){//change one node data of the AppBook
     PrintAppBook(leader->listFirstNode,stdout);
     int modifyDataIndex;
     while (1){//choice node
-        printf("Please enter which data to modify(index) --input 0 (to cancel modify operation) or the number(the data you want to modify):");
+        printf("Please enter which data to modify(index) --input 0 (to cancel modify operation) , -1 to Search, or the number(the data you want to modify):");
         scanf("%d",&modifyDataIndex);
         getchar();
         if(modifyDataIndex==0){ printf("rollback to menu\n"); return; }
